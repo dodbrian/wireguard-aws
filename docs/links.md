@@ -22,5 +22,5 @@
 ## Get sorted list of filtered AMIs
 
 ```bash
-$ aws ec2 describe-images --filters "Name=architecture,Values=arm64" "Name=name,Values=*ubuntu*22.04*minimal*" --query 'sort_by(Images, &Name)[].Name' --owners amazon | jq
+aws ec2 describe-images --filters "Name=architecture,Values=arm64" "Name=name,Values=*ubuntu*22.04*minimal*" --query 'sort_by(Images, &Name)[].Name' --owners amazon | jq
 ```

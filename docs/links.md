@@ -16,6 +16,7 @@
 
 - [Cloud-init](https://cloudinit.readthedocs.io)
 - [Bash programming basics](https://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO.html)
+- [Watch filesystem changes](https://facebook.github.io/watchman/docs/install.html)
 
 # Commands
 

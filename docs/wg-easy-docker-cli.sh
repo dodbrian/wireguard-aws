@@ -11,3 +11,18 @@ docker run -d \
   --sysctl="net.ipv4.ip_forward=1" \
   --restart unless-stopped \
   weejewel/wg-easy
+  
+  
+while true; do
+	"/root/.wg-easy/wg0.json" | entr -d cp /root/.wg-easy/wg0.json /root 
+done
+
+
+while true; do echo "/root/.wg-easy/wg0.json" | sudo entr -d cp /root/.wg-easy/wg0.json /root; done
+
+sudo yum remove awscli
+curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+sudo yum install -y amazon-linux-extras
+

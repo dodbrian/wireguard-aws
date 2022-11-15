@@ -2,44 +2,78 @@ provider "aws" {
   region = "eu-north-1"
 }
 
-# resource "aws_spot_instance_request" "instance" {
-#   instance_type        = "t4g.nano"
-#   ami                  = "ami-05479cdbcb6e73038"
-#   spot_type            = "persistent"
-#   wait_for_fulfillment = true
-# }
+resource "aws_autoscaling_group" "wg_test_autoscaling_group" {
+  name               = "wg_test_autoscaling_group"
+  min_size           = 1
+  max_size           = 1
+  desired_capacity   = 1
+  availability_zones = data.aws_availability_zones.wg_test_zones.names
 
-# resource "aws_launch_template" "wg-server-template" {
-#   name          = "wg-server-template"
-#   image_id      = "ami-05479cdbcb6e73038"
-#   instance_type = "t4g.nano"
-
-#   instance_market_options {
-#     market_type = "spot"
-#   }
-# }
-
-resource "aws_instance" "wg_test_instance" {
-  instance_type               = "t4g.nano"
-  ami                         = data.aws_ami.ubuntu-linux.id
-  associate_public_ip_address = true
-  security_groups             = [aws_security_group.wg_test_security_group.name]
-  iam_instance_profile        = aws_iam_instance_profile.wg_test_instance_profile.name
-  key_name                    = "dodbrian-eu-north-1"
-  user_data                   = filebase64("user-data.sh")
-
-  root_block_device {
-    encrypted = true
-  }
-
-  tags = {
-    "Name" = "wg-test"
+  launch_template {
+    id      = aws_launch_template.wg_test_launch_template.id
+    version = "$Latest"
   }
 }
 
-resource "aws_iam_instance_profile" "wg_test_instance_profile" {
-  name = "wg_test_instance_profile"
-  role = aws_iam_role.wg_test_role.name
+resource "aws_launch_template" "wg_test_launch_template" {
+  name                   = "wg_test_launch_template"
+  image_id               = data.aws_ami.ubuntu-linux.id
+  instance_type          = "t4g.nano"
+  key_name               = "dodbrian-eu-north-1"
+  update_default_version = true
+  user_data              = filebase64("user-data.sh")
+
+  block_device_mappings {
+    device_name = "/dev/sda1"
+
+    ebs {
+      encrypted = true
+    }
+  }
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups             = [aws_security_group.wg_test_security_group.id]
+  }
+
+  instance_market_options {
+    market_type = "spot"
+  }
+
+  iam_instance_profile {
+    arn = aws_iam_instance_profile.wg_test_instance_profile.arn
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      "Name" = "wg-test"
+    }
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = {
+      "Name" = "wg-test"
+    }
+  }
+
+  tag_specifications {
+    resource_type = "network-interface"
+
+    tags = {
+      "Name" = "wg-test"
+    }
+  }
+
+  tag_specifications {
+    resource_type = "spot-instances-request"
+
+    tags = {
+      "Name" = "wg-test"
+    }
+  }
 }
 
 resource "aws_security_group" "wg_test_security_group" {
@@ -81,6 +115,11 @@ resource "aws_security_group" "wg_test_security_group" {
     to_port     = 0
     protocol    = "-1"
   }
+}
+
+resource "aws_iam_instance_profile" "wg_test_instance_profile" {
+  name = "wg_test_instance_profile"
+  role = aws_iam_role.wg_test_role.name
 }
 
 resource "aws_iam_role" "wg_test_role" {
@@ -135,6 +174,10 @@ data "aws_ami" "ubuntu-linux" {
     name   = "name"
     values = ["*ubuntu*22.04*minimal*"]
   }
+}
+
+data "aws_availability_zones" "wg_test_zones" {
+  state = "available"
 }
 
 terraform {

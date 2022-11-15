@@ -9,7 +9,7 @@ apt-get remove awscli
 # Install aws cli v2
 curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
-sudo ./aws/install
+./aws/install
 
 # Install docker
 curl -sSL https://get.docker.com | sh

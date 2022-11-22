@@ -30,6 +30,7 @@ resource "aws_launch_template" "wg_test_launch_template" {
       encrypted = true
     }
   }
+
   network_interfaces {
     associate_public_ip_address = true
     security_groups             = [aws_security_group.wg_test_security_group.id]
@@ -85,7 +86,7 @@ resource "aws_security_group" "wg_test_security_group" {
   }
 
   ingress {
-    cidr_blocks = ["178.6.229.122/32"]
+    cidr_blocks = ["178.11.101.141/32"]
     description = "SSH"
     from_port   = 22
     to_port     = 22
@@ -154,6 +155,29 @@ resource "aws_iam_role" "wg_test_role" {
           "Action" : [
             "s3:*"
           ],
+          "Resource" : "*"
+        }
+      ]
+    })
+  }
+
+  inline_policy {
+    name = "wg_test_associate_eip_policy"
+
+    policy = jsonencode({
+      "Version" : "2012-10-17",
+      "Statement" : [
+        {
+          "Effect" : "Allow",
+          "Action" : "ec2:AssociateAddress",
+          "Resource" : [
+            "arn:aws:ec2:*:*:elastic-ip/*",
+            "arn:aws:ec2:*:*:instance/*"
+          ]
+        },
+        {
+          "Effect" : "Allow",
+          "Action" : "ec2:DescribeAddresses",
           "Resource" : "*"
         }
       ]

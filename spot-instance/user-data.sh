@@ -11,6 +11,11 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zi
 unzip awscliv2.zip
 ./aws/install
 
+# Associate elastic IP address
+WG_INSTANCE_ID=`curl http://169.254.169.254/latest/meta-data/instance-id`
+WG_EIP_ALLOCATION_ID=`aws ec2 describe-addresses --filters "Name=tag:Name,Values=wg-aws"  --query 'Addresses[0].AllocationId' --output text`
+aws ec2 associate-address --instance-id $WG_INSTANCE_ID --allocation-id $WG_EIP_ALLOCATION_ID
+
 # Install docker
 curl -sSL https://get.docker.com | sh
 

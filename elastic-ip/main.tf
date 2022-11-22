@@ -2,7 +2,7 @@ provider "aws" {
   region = "eu-north-1"
 }
 
-resource "aws_eip" "eip" {
+resource "aws_eip" "wg_test_eip" {
   vpc = true
 
   tags = {

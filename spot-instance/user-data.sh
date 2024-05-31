@@ -33,7 +33,7 @@ docker run -d \
   --sysctl="net.ipv4.conf.all.src_valid_mark=1" \
   --sysctl="net.ipv4.ip_forward=1" \
   --restart unless-stopped \
-  weejewel/wg-easy
+  ghcr.io/wg-easy/wg-easy
 
 # Restore existing configuration (if any)
 docker stop wg-easy
